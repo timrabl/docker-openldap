@@ -1,0 +1,19 @@
+dn: dc=rabl,dc=org
+objectClass: dcObject
+objectClass: organization
+objectClass: top
+dc: rabl
+o: rabl
+
+dn: ou=people,dc=rabl,dc=org
+ou: Users
+objectClass: top
+objectClass: organizationalUnit
+description: Central location for UNIX users
+
+dn: ou=groups,dc=rabl,dc=org
+ou: Groups
+objectClass: top
+objectClass: organizationalUnit
+description: Central location for UNIX groups
+
