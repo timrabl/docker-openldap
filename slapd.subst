@@ -1,0 +1,48 @@
+include		/etc/openldap/schema/core.schema
+include		/etc/openldap/schema/cosine.schema
+include		/etc/openldap/schema/inetorgperson.schema
+include		/etc/openldap/schema/nis.schema
+
+pidfile		${LDAP_RUN_DIR}slapd.pid
+argsfile	${LDAP_RUN_DIR}slapd.args
+
+modulepath      /usr/lib/openldap
+moduleload      back_mdb.so
+moduleload      memberof.so
+moduleload      refint.so
+
+overlay memberof
+memberof-refint TRUE
+memberof-group-oc groupOfNames
+memberof-member-ad member
+memberof-memberof-ad memberOf
+
+overlay refint
+refint_attributes member
+refint_nothing "cn=Manager,${SUFFIX}"
+
+access to * by self write
+  by dn="cn=Manager,${SUFFIX}" write
+  by * read
+  by anonymous auth
+
+disallow bind_anon
+
+TLSCACertificateFile ${LDAP_TLS_CA}
+TLSCertificateFile ${LDAP_TLS_CERT}
+TLSCertificateKeyFile ${LDAP_TLS_KEY}
+
+#######################################################################
+# MDB database definitions
+#######################################################################
+
+database	mdb
+maxsize		1073741824
+suffix		"${SUFFIX}"
+rootdn		"cn=Manager,${SUFFIX}"
+
+rootpw		${LDAP_PASSWORD}
+
+directory	${LDAP_DATA_DIR}
+
+index	objectClass,uid,mail,cn	eq
