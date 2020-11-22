@@ -1,0 +1,30 @@
+version: '3.4'
+services:
+  ldap-master:
+    image: timrabl/openldap:devel
+    restart: unless-stopped
+    environment:
+      SUFFIX: "dc=rabl,dc=org"
+      LDAP_DEBUG : "0"
+      LDAP_PASSWORD: "testing"
+    volumes:
+      - ${PWD}/tls:/etc/openldap/tls
+      - ${PWD}/seed:/etc/openldap/seed
+      - ${PWD}/slapd.subst:/etc/openldap/slapd.subst
+      - ldap_data:/var/lib/openldap/openldap-data
+    ports:
+      - 127.0.0.1:636:636
+
+  ldap-seeder:
+    image: timrabl/openldap:devel
+    depends_on:
+      - ldap-master
+    environment:
+      LDAP_PASSWORD: "testing"
+      LDAP_SEED_ENABLE: "true"
+      SUFFIX: "dc=rabl,dc=org"
+    volumes:
+      - ${PWD}/seed:/etc/openldap/seed
+
+volumes:
+  ldap_data:
